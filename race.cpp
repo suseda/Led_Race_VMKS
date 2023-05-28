@@ -28,6 +28,11 @@ float speed2=0;
 float dist1=0;
 float dist2=0;
 
+byte currLapP1 = 1;
+byte currLapP2 = 1;
+unsigned long lapStartP1 = 0;
+unsigned long lapStartP2 = 0;
+
 byte loop1=0;
 byte loop2=0;
 
@@ -98,6 +103,7 @@ void setup()
     };
     track.show();
   };
+  Serial.begin(9600);
   start_race();    
 }
 
@@ -110,14 +116,14 @@ void start_race()
 
   track.show();
   delay(2000);
-  track.setPixelColor(12, track.Color(0,255,0));
-  track.setPixelColor(11, track.Color(0,255,0));
+  track.setPixelColor(8, track.Color(255,0,0));
+  track.setPixelColor(7, track.Color(255,0,0));
   track.show();
   tone(PIN_AUDIO,400);
   delay(2000);
   noTone(PIN_AUDIO);                  
-  track.setPixelColor(12, track.Color(0,0,0));
-  track.setPixelColor(11, track.Color(0,0,0));
+  track.setPixelColor(8, track.Color(0,0,0));
+  track.setPixelColor(7, track.Color(0,0,0));
   track.setPixelColor(10, track.Color(255,255,0));
   track.setPixelColor(9, track.Color(255,255,0));
   track.show();
@@ -126,8 +132,8 @@ void start_race()
   noTone(PIN_AUDIO);                  
   track.setPixelColor(9, track.Color(0,0,0));
   track.setPixelColor(10, track.Color(0,0,0));
-  track.setPixelColor(8, track.Color(255,0,0));
-  track.setPixelColor(7, track.Color(255,0,0));
+  track.setPixelColor(12, track.Color(0,255,0));
+  track.setPixelColor(11, track.Color(0,255,0));
   track.show();
   tone(PIN_AUDIO,1200);
   delay(2000);
@@ -147,8 +153,6 @@ void winner_fx()
 };
 
 
-
-
 void draw_car1(void)
 {
   for( int i = 0 ; i <= loop1 ; i++)
@@ -166,7 +170,19 @@ void draw_car2(void)
 }
   
 void loop() {
-    
+
+    if(loop1 != currLapP1)
+    {
+        lapStartP1 = millis();
+        currLapP1 = loop1;
+    }
+
+    if(loop2 != currLapP2)
+    {
+        lapStartP2 = millis();
+        currLapP2 = loop2;
+    }
+
     for( int i = 0 ; i < NPIXELS ; i++)
     {
       track.setPixelColor(i, track.Color(0,0,(127-gravity_map[i])/8) );
@@ -218,6 +234,11 @@ void loop() {
     if (dist1 > NPIXELS*loop1) 
     {
       loop1++;
+      Serial.print("Lap ");
+      Serial.print(loop1);
+      Serial.print(" P1: ");
+      Serial.print(millis() - lapStartP1);
+      Serial.println(" ms");
       tone(PIN_AUDIO,600);
       TBEEP=2;
     };
@@ -225,6 +246,11 @@ void loop() {
     if (dist2 > NPIXELS*loop2) 
     {
       loop2++;
+      Serial.print("Lap ");
+      Serial.print(loop2);
+      Serial.print(" P2: ");
+      Serial.print(millis() - lapStartP2);
+      Serial.println(" ms");
       tone(PIN_AUDIO,700);
       TBEEP=2;
     };
