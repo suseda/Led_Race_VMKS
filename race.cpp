@@ -28,10 +28,11 @@ float speed2=0;
 float dist1=0;
 float dist2=0;
 
-byte currLapP1 = 1;
-byte currLapP2 = 1;
+byte currLapP1 = 0;
+byte currLapP2 = 0;
 unsigned long lapStartP1 = 0;
 unsigned long lapStartP2 = 0;
+bool firstLap = true;
 
 byte loop1=0;
 byte loop2=0;
@@ -157,7 +158,7 @@ void draw_car1(void)
 {
   for( int i = 0 ; i <= loop1 ; i++)
   {
-    track.setPixelColor(((word)dist1 % NPIXELS)+i, track.Color(0,255-i*20,0));
+    track.setPixelColor(((word)dist1 % NPIXELS)+i, track.Color(0,0,255-i*20));
   };                   
 }
 
@@ -170,6 +171,12 @@ void draw_car2(void)
 }
   
 void loop() {
+    if(firstLap == true)
+    {
+      lapStartP1 = millis();
+      lapStartP2 = millis();
+      firstLap = false;
+    } 
 
     if(loop1 != currLapP1)
     {
@@ -259,7 +266,7 @@ void loop() {
     {
       for( int i = 0 ; i < NPIXELS ; i++)
       {
-        track.setPixelColor(i, track.Color(0,255,0));
+        track.setPixelColor(i, track.Color(0,0,255));
       }; 
       track.show();
       winner_fx();
